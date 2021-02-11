@@ -11,7 +11,7 @@ Collection of HI tools that I find useful
 import numpy as np
 import astropy.units as u
 
-def get_nhi(sigma,sens,linewidth,beam_fwhm):
+def get_nhi(sigma,sens,linewidth,beam_maj,beam_min):
     """
     Get N_HI sens at sigma level
     Inputs:
@@ -20,7 +20,29 @@ def get_nhi(sigma,sens,linewidth,beam_fwhm):
     - linewidth: Quantity, linewidth from N_HI calc
     - beam_fwhm: Quantity, beam fwhm
     """
-    pass
+    omega_beam = get_beam_area(beam_maj,beam_min)
+    #hitools, hi freq
+    #should maybe define globally?
+    freq = 1420.405752 * u.MHz
+    #convert to brightness temp
+    tb = sens.to(u.K,u.brightness_temperature(freq,beam_area=omega_beam))
+    #convert to N_HI
+    nhi = 1.823e18 * tb * linewidth  / (u.K * u.km / u.s) / (u.cm * u.cm)
+    nhi_sig = sigma*nhi
+    return nhi_sig
+
+def get_beam_area(beam_maj, beam_min):
+    """
+    Calculate beam area, provided FWHM of maj and min axis
+    Inputs are quantities - have angular units
+    """
+    fwhm_to_sigma = 1. / (8 * np.log(2))**0.5
+    maj_sigma = beam_maj * fwhm_to_sigma
+    min_sigma = beam_min * fwhm_to_sigma
+    beam_area = 2 * np.pi * min_sigma * maj_sigma
+    
+    return beam_area
+    
 
 def get_sens_for_res(sens,spec_res,desired_res):
     """
