@@ -11,6 +11,21 @@ Collection of HI tools that I find useful
 import numpy as np
 import astropy.units as u
 
+def get_dist_res(logmhi,beam,nres):
+    """
+    Calculate distance at which a HI disk is resolved
+    Assume M_HI-D_HI relation; don't account for scatter
+    Inputs:
+    - logmhi: Float, log of HI mass
+    - beam: Quantity, major beam in angular units
+    - nres: Float, number of beams to be considered resolved
+    """
+    disk_size = 10**(0.506*logmhi - 3.293) * u.kpc
+    dist_res = (disk_size /
+                (nres*beam )).to(u.Mpc,
+                                 equivalencies=u.dimensionless_angles())
+    return(dist_res)
+
 def get_nhi(sigma,sens,linewidth,beam_maj,beam_min):
     """
     Get N_HI sens at sigma level
@@ -100,3 +115,22 @@ def convert_chan_freq_vel(chan_res):
         new_res = restfreq-offsetfreq
 
     return new_res
+
+def convert_vel_freq(quantity,restfreq=1420.405752 * u.MHz):
+    """
+    Take an input quantity that is either vel or freq and return the other
+    Default for HI line
+    Use radio convention (could set as param)
+    """
+    freq_to_vel = u.doppler_radio(restfreq)
+    if 'Hz' in quantity.unit.to_string():
+        new_quantity = quantity.to(u.km/u.s, equivalencies = freq_to_vel)
+    else:
+        #presume in vel, use try/except in case
+        try:
+            new_quantity = quantity.to(u.MHz,  equivalencies = freq_to_vel)
+        except:
+            print("Units of input not recognized")
+            new_quantity = np.nan
+
+    return new_quantity
