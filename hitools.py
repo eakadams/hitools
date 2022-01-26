@@ -13,6 +13,19 @@ import astropy.units as u
 from astropy import constants as const
 import mpmath as mp
 
+def get_eff_beam(bmaj, bmin, bpa, pa):
+    """ Given bmaj, bmin, bpa beam parameters
+    and position angle of interest, calculate
+    effective beam along that angle. Returns the effective beam
+    """
+    #first define effective position angle, between PA and beam
+    eff_pa = pa - bpa
+    #then calculate projection of beam along that angle
+    beam_eff = np.sqrt( ( bmaj * np.cos(eff_pa) )**2 +
+                        ( bmin * np.sin(eff_pa) )**2 )
+    return beam_eff
+
+
 def get_mhi(dist,sint):
     """
     Get M_HI given distance and flux integral
