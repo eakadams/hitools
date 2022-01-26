@@ -1,0 +1,20 @@
+name: hitools
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python>=3.6
+  - numpy
+  - matplotlib
+  - jupyterlab
+  - astropy
+  - spectral-cube
+  - regions>=0.3
+  - scipy
+  - radio-beam
+  - mpmath
+  - pip:
+    - tol-colors
+    - importlib_resources
+
+
