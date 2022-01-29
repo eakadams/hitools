@@ -13,8 +13,11 @@ import astropy.units as u
 from spectral_cube import SpectralCube
 from regions import EllipseSkyRegion, EllipsePixelRegion
 from astropy.coordinates import SkyCoord
-from hitools.hitools import get_eff_beam, get_beam_area
 import matplotlib.pyplot as plt
+try:
+    from hitools.tools import get_eff_beam, get_beam_area
+except:
+    from tools import get_eff_beam, get_beam_area
 
 class Source(object):
     """
